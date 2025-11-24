@@ -1,0 +1,115 @@
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>صفحة | عنا</title>
+
+    <style>
+      .about-title {
+        font-size: 26px;
+        font-weight: 700;
+        color: #b6432e;
+        text-align: center;
+        position: relative;
+        margin-bottom: 50px;
+      }
+
+      .about-title::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background-color: #b6432e;
+      }
+
+      .about-text h5 {
+        color: #b6432e;
+        font-weight: 700;
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+
+      .about-text p {
+        font-size: 15px;
+        color: #333;
+        line-height: 1.8;
+        margin-bottom: 20px;
+      }
+
+      .about-img img {
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      @media (max-width: 992px) {
+        .about-section {
+          text-align: center;
+        }
+        .about-text {
+          margin-bottom: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- مسار التنقل -->
+      <div class="container">
+        <nav aria-label="breadcrumb" style="padding-top: 20px">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="index.html"><i class="bi bi-house-door fa-lg"></i></a>
+            </li>
+            <li class="breadcrumb-item"><a href="about.html">عنا</a></li>
+          </ol>
+        </nav>
+      </div>
+
+      <!-- العنوان -->
+      <h2 class="about-title text-center">عن شركة إلكترون</h2>
+      <div class="row align-items-center mb-5">
+        <!-- العمود للصورة -->
+        <div class="col-lg-6 col-md-12 about-img">
+          <img
+            src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80"
+            alt="لوحة إلكترونية"
+          />
+        </div>
+        <!-- العمود للنص -->
+        <div class="col-lg-6 col-md-12 about-text">
+          <h5>من نحن</h5>
+          <p>
+            إلكترون هي منصة حديثة متخصصة في بيع قطع الغيار الإلكترونية ومستلزمات
+            المشاريع التقنية، تأسست عام 2024 في مدينة إنما – عدن، بهدف سد حاجة
+            السوق المحلي من مستلزمات الإلكترونيات الحديثة بجودة عالية وأسعار
+            مناسبة.
+          </p>
+
+          <h5>رؤيتنا</h5>
+          <p>
+            أن تكون الواجهة الإلكترونية الأولى للطلاب و المهندسين و الهواة في
+            اليمن؛ نوفر منتجات موثوقة، خدمة سريعة، وتجربة تسوق احترافية.
+          </p>
+
+          <h5>رسالتنا</h5>
+          <p>
+            تمكين كل مبدع في عالم الإلكترونيات من الوصول إلى الأدوات والمكونات
+            التي يحتاجها بسهولة، مع ضمان الجودة والدعم الفني المتواصل.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- مختارة من أجلك  -->
+    {%include 'partials/cards.html' %}
+  </body>
+</html>
+
+{% endblock %}

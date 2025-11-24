@@ -1,0 +1,1094 @@
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>تفاصيل|المنتج</title>
+
+    <style>
+      :root {
+        --clr-primary: #f25715;
+        --clr-primary-contrast: #ffffff;
+        --clr-primary-hover: #e85c31;
+        --clr-primary-muted: #ffe2d4;
+        --clr-ink: #2f3a45;
+        --clr-ink-muted: #66727e;
+        --clr-bg: #fbf8f3;
+        --clr-surface: #ffffff;
+        --clr-muted-bg: #fbf8f3;
+        --clr-section-peach: #fbe8da;
+        --clr-border: #e6e8ef;
+        --clr-footer-bg: #0f1e2e;
+        --clr-footer-text: #e6e9ee;
+      }
+
+      /* إضافات خاصة بصفحة تفاصيل المنتج */
+      .product-detail-section {
+        padding: 40px 0 80px;
+        background-color: var(--clr-bg);
+      }
+
+      .product-gallery {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 24px;
+        align-items: flex-start;
+        position: relative;
+      }
+
+      .main-image {
+        width: 100%;
+        height: 500px;
+        object-fit: contain;
+        background: var(--clr-muted-bg);
+        border-radius: var(--radius-card);
+        padding: 5px;
+        margin-bottom: 20px;
+        /* border: 2px solid var(--clr-border); */
+        flex: 1;
+      }
+
+      .thumbnail-gallery {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+        justify-content: flex-start;
+        min-width: 90px;
+        max-height: 420px;
+        overflow: hidden;
+      }
+
+      .thumbnail {
+        width: 90px;
+        height: 90px;
+        object-fit: contain;
+        background: var(--clr-muted-bg);
+        border-radius: 15px;
+        padding: 5px;
+        /* border: 2px solid transparent; */
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      /* carousel controls */
+      .thumbnail-carousel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .thumb-nav {
+        background: transparent;
+        border: none;
+        font-size: 28px;
+        color: var(--clr-ink);
+        cursor: pointer;
+        padding: 6px 8px;
+      }
+      .thumb-nav:hover {
+        color: var(--clr-primary);
+      }
+
+      .thumbnail:hover,
+      .thumbnail.active {
+        border-color: var(--clr-primary);
+      }
+
+      .product-info {
+        padding-right: 30px;
+      }
+
+      .product-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--clr-ink);
+        margin-bottom: 15px;
+      }
+
+      .product-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--clr-primary);
+        margin-bottom: 20px;
+      }
+
+      .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .rating-stars {
+        color: #f39c12;
+        font-size: 1.2rem;
+      }
+
+      .rating-text {
+        color: var(--clr-ink-muted);
+        font-size: 1rem;
+      }
+
+      .product-description {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--clr-ink);
+        margin-bottom: 30px;
+      }
+
+      .product-features {
+        background: #fccab6;
+        padding: 25px;
+        border-radius: var(--radius-card);
+        margin-bottom: 30px;
+        width: 80%;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1rem;
+      }
+
+      .feature-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .feature-item i {
+        color: var(--clr-primary);
+        margin-left: 10px;
+        width: 20px;
+      }
+
+      .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .quantity-label {
+        font-weight: 600;
+        color: var(--clr-ink);
+      }
+
+      .quantity-controls {
+        display: flex;
+        align-items: center;
+        border: 2px solid var(--clr-border);
+        border-radius: var(--radius-btn);
+        overflow: hidden;
+      }
+
+      .quantity-btn {
+        background: var(--clr-surface);
+        border: none;
+        padding: 10px 15px;
+        color: var(--clr-ink);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .quantity-btn:hover {
+        background: var(--clr-primary);
+        color: var(--clr-primary-contrast);
+      }
+
+      .quantity-input {
+        border: none;
+        padding: 10px 15px;
+        text-align: center;
+        width: 60px;
+        background: var(--clr-surface);
+        color: var(--clr-ink);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .btn-add-cart {
+        background: var(--clr-primary);
+        color: var(--clr-primary-contrast);
+        border: none;
+        padding: 15px 30px;
+        border-radius: var(--radius-btn);
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        flex: 1;
+      }
+
+      .btn-add-cart:hover {
+        background: #ce5029;
+        transform: translateY(-1px);
+        box-shadow: 4px 5px 10px rgba(255, 106, 61, 0.3);
+      }
+
+      .btn-wishlist {
+        background: transparent;
+        color: var(--clr-ink);
+        border: 2px solid var(--clr-border);
+        padding: 15px 20px;
+        border-radius: var(--radius-btn);
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+      }
+
+      .btn-wishlist:hover {
+        border-color: var(--clr-primary);
+        color: var(--clr-primary);
+      }
+
+      .product-meta {
+        border-top: 1px solid var(--clr-border);
+        padding-top: 20px;
+      }
+
+      .meta-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+      }
+
+      .meta-label {
+        color: var(--clr-ink-muted);
+      }
+
+      .meta-value {
+        color: var(--clr-ink);
+        font-weight: 500;
+      }
+
+      .product-tabs {
+        margin-top: 80px;
+      }
+
+      .nav-tabs {
+        border-bottom: 2px solid var(--clr-border);
+      }
+
+      .nav-tabs .nav-link {
+        border: none;
+        color: var(--clr-ink-muted);
+        font-weight: 600;
+        padding: 15px 25px;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .nav-tabs .nav-link.active {
+        color: var(--clr-primary);
+        border-bottom-color: var(--clr-primary);
+        background: transparent;
+      }
+
+      .tab-content {
+        padding: 30px 0;
+      }
+
+      .specifications-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .specifications-table th,
+      .specifications-table td {
+        padding: 15px;
+        text-align: right;
+        border-bottom: 1px solid var(--clr-border);
+      }
+
+      .specifications-table th {
+        background: var(--clr-muted-bg);
+        font-weight: 600;
+        color: var(--clr-ink);
+        width: 30%;
+      }
+
+      .specifications-table td {
+        color: var(--clr-ink-muted);
+      }
+
+      .related-products {
+        padding: 80px 0;
+        background: var(--clr-bg);
+      }
+
+      @media (max-width: 991px) {
+        .product-info {
+          padding-right: 0;
+          margin-top: 30px;
+        }
+
+        .product-title {
+          font-size: 2rem;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 575.98px) {
+        .product-gallery {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .product-info {
+          padding: 0px 5px;
+        }
+        .thumbnail-gallery {
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: center;
+          overflow-x: auto;
+          gap: 10px;
+          min-width: 0;
+          margin-bottom: 8px;
+        }
+        .thumbnail {
+          width: 48px;
+          height: 48px;
+          padding: 3px;
+        }
+        .main-image {
+          height: 220px;
+          margin-bottom: 0;
+        }
+      }
+
+      :root {
+        --bg-cream: #fbf7f2; /* خلفية كريمية */
+        --accent: #f25715; /* برتقالي للأزرار */
+        --muted: #6b6b6b; /* نص ثانوي */
+        --card-bg: #fff; /* خلفية بطاقات داخلية */
+      }
+      /* Top pills (tabs) */
+      .tabs-pill {
+        display: inline-flex;
+        background: transparent;
+        padding: 6px;
+        border-radius: 999px;
+        box-shadow: none;
+      }
+      .tabs-pill .nav-item + .nav-item {
+        margin-right: -35px;
+      }
+      .tabs-pill .nav-link {
+        position: relative;
+        z-index: 1;
+        border-radius: 30px;
+        padding: 13px 90px;
+        background: white;
+        color: #5d5d5d;
+        border: none;
+        box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+        transition: all 0.2s ease-in-out;
+      }
+      .tabs-pill .nav-link.active {
+        z-index: 2;
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(255, 106, 42, 0.25);
+      }
+      /* Review form styles */
+      .review-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .review-btn {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .review-form {
+        display: none;
+        background: var(--card-bg);
+        border: 1px solid var(--clr-border);
+        padding: 16px;
+        border-radius: 10px;
+        box-shadow: 0 6px 18px rgba(15, 35, 61, 0.06);
+        margin-bottom: 20px;
+      }
+      .review-form .form-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .review-form input[type="text"],
+      .review-form textarea,
+      .review-form select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--clr-border);
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .review-form textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+      .review-form .submit-btn {
+        background: var(--clr-primary);
+        color: var(--clr-primary-contrast);
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      /* تصغير حجم التبويبات على الشاشات الصغيرة مع الحفاظ على العرض الأفقي */
+      @media (max-width: 575.98px) {
+        .tabs-pill {
+          display: inline-flex;
+          width: 70%;
+          padding: 2px;
+          gap: 15px;
+        }
+        .tabs-pill .nav-link {
+          padding: 7px 20px;
+          font-size: 10px;
+          min-width: 70px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- مسار التنقل -->
+    {% include "partials/navigation_route.html" with breadcrumbs=breadcrumbs %}
+
+    <!-- قسم تفاصيل المنتج -->
+    <section class="product-detail-section">
+      <div class="container">
+        <div class="row">
+          <!-- معرض الصور الديناميكي -->
+          <div class="col-lg-6">
+            <div class="product-gallery">
+             <!-- 👇 استبدل كود الصورة القديم بهذا البلوك بالكامل 👇 -->
+              {% if product.image %}
+              <img
+                id="mainImage"
+                src="{{ product.image.url }}"
+                alt="{{ product.name }}"
+                class="main-image"
+              />
+              {% else %}
+              <img
+                id="mainImage"
+                src="https://via.placeholder.com/500x500?text=No+Image"
+                alt="{{ product.name }}"
+                class="main-image"
+                style="background-color: #f0f0f0;"
+              />
+              {% endif %}
+              <!-- 👆 نهاية التعديل 👆 -->
+              <div class="thumbnail-carousel">
+                <div class="thumbnail-gallery">
+                  <!-- حلقة لعرض كل صور المنتج -->
+                  {% for p_image in product.images.all %}
+                  <img
+                    src="{{ p_image.image.url }}"
+                    alt="{{ product.title }} - صورة مصغرة"
+                    class="thumbnail {% if forloop.first %}active{% endif %}"
+                    onclick="changeMainImage(this)"
+                  />
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- معلومات المنتج الديناميكية -->
+          <div class="col-lg-6">
+            <div class="product-info">
+              <h1 class="product-title">{{ product.name }}</h1>
+              <!-- تقييمات المنتج الديناميكية -->
+              <div class="product-rating">
+                {% if review_summary.num_reviews > 0 %}
+                <div class="rating-stars">
+                  {% with avg_int=review_summary.avg_rating|floatformat:0 %}
+                  {%for i in "12345" %} {% if i|add:"0" <= avg_int|add:"0" %}
+                  <i class="fas fa-star"></i>
+                  {% else %}
+                  <i class="far fa-star"></i>
+                  {% endif %} {% endfor %} {% endwith %}
+                </div>
+                <span class="rating-text">
+                  ({{ review_summary.avg_rating|floatformat:1 }}) -
+                  {{review_summary.num_reviews }} تقييم
+                </span>
+                {% else %}
+                <span class="rating-text">لا توجد تقييمات بعد</span>
+                {% endif %}
+              </div>
+
+              <div class="product-price">${{ product.price }}</div>
+
+              <p class="product-description">{{ product.description|safe }}</p>
+
+              {% if product.features %}
+              <div class="product-features">
+                <h4 style="margin-bottom: 20px; color: var(--clr-ink)">
+                  المميزات الرئيسية:
+                </h4>
+
+                <!-- حلقة لعرض كل ميزة من حقل JSON -->
+                {% for feature in product.features %}
+                <div class="feature-item">
+                  <!-- يعرض أيقونة FontAwesome من الحقل -->
+                  <i class="{{ feature.icon }}"></i>
+                  <!-- يعرض نص الميزة من الحقل -->
+                  <span>{{ feature.text }}</span>
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+
+              <!-- محدد الكمية -->
+              <div class="quantity-selector">
+                <span class="quantity-label">الكمية:</span>
+                <div class="quantity-controls">
+                  <button
+                    type="button"
+                    class="quantity-btn minus"
+                    onclick="changeQuantity(-1)"
+                  >
+                    -
+                  </button>
+                  <!-- أضفنا id="quantity-input" -->
+                  <input
+                    id="quantity-input"
+                    type="text"
+                    class="quantity-input"
+                    value="1"
+                    min="1"
+                    readonly
+                  />
+                  <button
+                    type="button"
+                    class="quantity-btn plus"
+                    onclick="changeQuantity(1)"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <!-- زر الإضافة إلى السلة -->
+              <div class="action-buttons">
+                <button
+                  class="btn-add-cart add-to-cart py-4"
+                  data-product-id="{{ product.id }}"
+                >
+                  <div class="button-wrapper">
+                    <span class="text">أضف للسلة</span>
+                    <div class="icon">
+                      <i class="bi bi-cart-plus fa-lg"></i>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              <div class="product-meta">
+                <div class="meta-item">
+                  <span class="meta-label">رقم المنتج:</span>
+                  <span class="meta-value">{{ product.sku }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">الفئة:</span>
+                  <span class="meta-value">{{ product.category.name }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">العلامة التجارية:</span>
+                  <span class="meta-value">{{ product.brand.name }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">حالة التوفر:</span>
+                  {% if product.is_available %}
+                  <span class="meta-value" style="color: var(--clr-primary)"
+                    >متوفر في المخزن</span
+                  >
+                  {% else %}
+                  <span class="meta-value" style="color: red"
+                    >غير متوفر حاليًا</span
+                  >
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} تنبيهات {% endcomment %}
+        <div
+          id="alert-container"
+          class="container"
+          style="
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: auto;
+          "
+        ></div>
+
+        <!-- Top centered pill tabs -->
+        <div class="d-flex justify-content-center mb-2">
+          <ul class="nav tabs-pill mt-5" role="tablist">
+            {% comment %}
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link active"
+                id="tab-description"
+                data-bs-toggle="tab"
+                data-bs-target="#description"
+                type="button"
+                role="tab"
+                aria-controls="description"
+                aria-selected="true"
+              >
+                الوصف
+              </button>
+            </li>
+            {% endcomment %}
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link active"
+                id="tab-specifications"
+                data-bs-toggle="tab"
+                data-bs-target="#specifications"
+                type="button"
+                role="tab"
+                aria-controls="specifications"
+                aria-selected="false"
+              >
+                المواصفات
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="tab-reviews"
+                data-bs-toggle="tab"
+                data-bs-target="#reviews"
+                type="button"
+                role="tab"
+                aria-controls="reviews"
+                aria-selected="false"
+              >
+                التقييمات
+              </button>
+            </li>
+            {% comment %}
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="tab-shipping"
+                data-bs-toggle="tab"
+                data-bs-target="#shipping"
+                type="button"
+                role="tab"
+                aria-controls="shipping"
+                aria-selected="false"
+              >
+                الشحن
+              </button>
+            </li>
+            {% endcomment %}
+          </ul>
+        </div>
+        <div class="tab-content px-3" id="productTabsContent">
+          {% comment %}
+          <div class="tab-pane fade" id="description" role="tabpanel">
+            <h4>وصف المنتج</h4>
+            <p>
+              لوحة Arduino UNO R3 هي أفضل خيار للمبتدئين في عالم الإلكترونيات
+              والبرمجة. تتميز بسهولة الاستخدام والتوافق الواسع مع جميع المكونات
+              الإلكترونية الشائعة.
+            </p>
+            <p>
+              تحتوي اللوحة على معالج ATmega328P القوي الذي يوفر أداءً ممتازاً
+              لمختلف المشاريع. كما تتضمن 14 منفذاً رقمياً و6 منافذ تناظرية، مما
+              يتيح لك توصيل مجموعة واسعة من الحساسات والمحركات.
+            </p>
+            <h5>ما يميز هذا المنتج:</h5>
+            <ul>
+              <li>سهولة البرمجة باستخدام Arduino IDE</li>
+              <li>مجتمع كبير من المطورين والدعم الفني</li>
+              <li>توافق مع آلاف المكتبات المجانية</li>
+              <li>جودة تصنيع عالية وضمان لمدة سنة</li>
+              <li>دليل استخدام شامل باللغة العربية</li>
+            </ul>
+          </div>
+          {% endcomment %}
+          <div
+            class="tab-pane fade show active"
+            id="specifications"
+            role="tabpanel"
+          >
+            <h4>المواصفات التقنية</h4>
+            {% if product.specifications.all %}
+            <table class="specifications-table">
+              <tbody>
+                {% for spec in product.specifications.all %}
+                <tr>
+                  <!-- نعرض اسم المواصفة -->
+                  <th>{{ spec.name }}</th>
+                  <!-- نعرض قيمة المواصفة -->
+                  <td>{{ spec.value }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% else %}
+            <!-- هذه الرسالة تظهر إذا لم يتم إضافة أي مواصفات للمنتج في لوحة التحكم -->
+            <p>لا توجد مواصفات فنية لهذا المنتج حاليًا.</p>
+            {% endif %}
+          </div>
+          <div class="tab-pane fade" id="reviews" role="tabpanel">
+            <h4>تقييمات العملاء</h4>
+
+            <div class="review-summary mb-4">
+              <div class="row">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="me-2">4 نجوم</span>
+                  <div class="progress flex-grow-1 me-2" style="height: 8px">
+                    <div
+                      class="progress-bar bg-warning"
+                      style="width: 20%"
+                    ></div>
+                  </div>
+                  <span>5</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                  <span class="me-2">3 نجوم</span>
+                  <div class="progress flex-grow-1 me-2" style="height: 8px">
+                    <div
+                      class="progress-bar bg-warning"
+                      style="width: 8%"
+                    ></div>
+                  </div>
+                  <span>2</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                  <span class="me-2">2 نجوم</span>
+                  <div class="progress flex-grow-1 me-2" style="height: 8px">
+                    <div
+                      class="progress-bar bg-warning"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                  <span>0</span>
+                </div>
+                <div class="d-flex align-items-center">
+                  <span class="me-2">1 نجمة</span>
+                  <div class="progress flex-grow-1 me-2" style="height: 8px">
+                    <div
+                      class="progress-bar bg-warning"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                  <span>0</span>
+                </div>
+              </div>
+
+              <!-- عينة من التقييمات -->
+              {% for review in reviews %}
+              <div class="review-item border-bottom pb-3 mb-3 mt-4">
+                <div
+                  class="d-flex justify-content-between align-items-start mb-2"
+                >
+                  <div>
+                    <!-- اسم العميل الذي كتب التقييم. نضع قيمة افتراضية "عميل" إذا كان الاسم غير موجود -->
+                    <strong>{{ review.customer.name|default:"عميل" }}</strong>
+                    <div class="rating-stars">
+                      <!-- حلقة لعرض النجوم بناءً على تقييم هذا التعليق بالتحديد -->
+                      {% for i in "12345" %} {% if i|add:"0" <= review.rating %}
+                      <i class="fas fa-star"></i>
+                      {% else %}
+                      <i class="far fa-star"></i>
+                      {% endif %} {% endfor %}
+                    </div>
+                  </div>
+                  <!-- تاريخ التقييم منسقًا -->
+                  <small class="text-muted"
+                    >{{ review.review_date|date:"d M, Y" }}</small
+                  >
+                </div>
+                <!-- نص التعليق -->
+                <p>{{ review.comment }}</p>
+              </div>
+              {% empty %}
+              <!-- هذه الرسالة تظهر فقط إذا كانت قائمة `reviews` فارغة -->
+              <div
+                id="no-reviews-alert"
+                class="alert alert-secondary mt-4"
+                role="alert"
+              >
+                كن أول من يقيّم هذا المنتج!
+              </div>
+              {% endfor %}
+
+              <div class="review-actions">
+                <button id="openReviewForm" class="review-btn">
+                  إضافة تعليق
+                </button>
+              </div>
+              <div id="reviewForm" class="review-form" aria-hidden="true">
+                <div class="form-row">
+                  <input
+                    id="reviewerName"
+                    type="text"
+                    placeholder="اسمك (مطلوب)"
+                    required
+                  />
+                  <select id="reviewRating">
+                    <option value="5">5 نجوم</option>
+                    <option value="4">4 نجوم</option>
+                    <option value="3">3 نجوم</option>
+                    <option value="2">2 نجوم</option>
+                    <option value="1">1 نجمة</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <textarea
+                    id="reviewText"
+                    placeholder="اكتب تعليقك هنا..."
+                    required
+                  ></textarea>
+                </div>
+                <div style="text-align: left">
+                  <button id="submitReview" class="submit-btn">
+                    إرسال التعليق
+                  </button>
+                  <button
+                    id="cancelReview"
+                    class="review-btn"
+                    style="background: #f3f3f3; color: #333"
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% comment %} >معلومات الشحن والإرجاع {% endcomment %}
+          <div class="tab-pane fade" id="shipping" role="tabpanel">
+            <h4>معلومات الشحن والإرجاع</h4>
+
+            <h5>الشحن:</h5>
+            <ul>
+              <li>شحن مجاني للطلبات فوق $25</li>
+              <li>التوصيل خلال 2-3 أيام عمل داخل المدن الرئيسية</li>
+              <li>التوصيل خلال 3-5 أيام عمل للمناطق الأخرى</li>
+              <li>إمكانية تتبع الشحنة عبر الموقع</li>
+            </ul>
+
+            <h5>سياسة الإرجاع:</h5>
+            <ul>
+              <li>إمكانية الإرجاع خلال 30 يوم من تاريخ الاستلام</li>
+              <li>المنتج يجب أن يكون في حالته الأصلية</li>
+              <li>استرداد كامل للمبلغ في حالة عيب المنتج</li>
+              <li>الإرجاع مجاني في حالة الخطأ من جانبنا</li>
+            </ul>
+
+            <h5>الضمان:</h5>
+            <ul>
+              <li>ضمان لمدة سنة كاملة ضد عيوب التصنيع</li>
+              <li>دعم فني مجاني طوال فترة الضمان</li>
+              <li>استبدال فوري في حالة العيب خلال أول 7 أيام</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- المنتجات ذات الصلة -->
+    {% include "partials/cards3_deta.html" with products=related_products %}
+
+    <script>
+      // ==========================================
+      // 1. معرض الصور (Thumbnail Gallery)
+      // ==========================================
+      (function () {
+        window.changeMainImage = function (img) {
+          const main = document.getElementById("mainImage");
+          if (!main || !img) return;
+          main.src = img.src;
+          document
+            .querySelectorAll(".thumbnail")
+            .forEach((t) => t.classList.remove("active"));
+          img.classList.add("active");
+        };
+
+        function scrollThumbnails(delta) {
+          const gallery = document.querySelector(".thumbnail-gallery");
+          if (!gallery) return;
+          if (getComputedStyle(gallery).flexDirection === "column") {
+            gallery.scrollBy({ top: delta * 80, behavior: "smooth" });
+          } else {
+            gallery.scrollBy({ left: delta * 100, behavior: "smooth" });
+          }
+        }
+
+        document
+          .querySelectorAll(".thumb-prev")
+          .forEach((btn) =>
+            btn.addEventListener("click", () => scrollThumbnails(-1))
+          );
+        document
+          .querySelectorAll(".thumb-next")
+          .forEach((btn) =>
+            btn.addEventListener("click", () => scrollThumbnails(1))
+          );
+      })();
+
+      // ==========================================
+      // 2. التحكم في الكمية (+ و -)
+      // ==========================================
+      function changeQuantity(amount) {
+        const quantityInput = document.getElementById("quantity-input");
+        let currentQuantity = parseInt(quantityInput.value) || 1;
+        let newQuantity = currentQuantity + amount;
+
+        if (newQuantity < 1) newQuantity = 1;
+        quantityInput.value = newQuantity;
+      }
+
+      // ==========================================
+      // 3. نظام التقييمات (Reviews) - مطور بـ SweetAlert
+      // ==========================================
+      document.addEventListener("DOMContentLoaded", function () {
+        const openBtn = document.getElementById("openReviewForm");
+        const form = document.getElementById("reviewForm");
+        const cancelBtn = document.getElementById("cancelReview");
+        const submitBtn = document.getElementById("submitReview");
+
+        // فتح/إغلاق النموذج
+        if (openBtn) {
+          openBtn.addEventListener("click", () => {
+            form.style.display =
+              form.style.display === "block" ? "none" : "block";
+          });
+        }
+
+        if (cancelBtn) {
+          cancelBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            form.style.display = "none";
+          });
+        }
+
+        // إرسال التقييم
+        if (submitBtn) {
+          submitBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            const rating = document.getElementById("reviewRating").value;
+            const comment = document.getElementById("reviewText").value.trim();
+            const name = document.getElementById("reviewerName").value.trim();
+
+            // نأخذ ID المنتج من زر الإضافة للسلة الموجود في الصفحة
+            const addToCartBtn = document.querySelector(".add-to-cart");
+            const productId = addToCartBtn
+              ? addToCartBtn.dataset.productId
+              : null;
+
+            if (!productId) {
+              Swal.fire({
+                icon: "error",
+                title: "خطأ",
+                text: "لم يتم العثور على معرف المنتج",
+              });
+              return;
+            }
+
+            if (!name || !comment) {
+              Swal.fire({
+                icon: "warning",
+                title: "تنبيه",
+                text: "الرجاء إدخال اسمك والتعليق",
+              });
+              return;
+            }
+
+            // تغيير الزر
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = "جارٍ الإرسال...";
+            submitBtn.disabled = true;
+
+            // إرسال الطلب
+            fetch(`/add-review/${productId}/`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"), // دالة getCookie موجودة في base.html
+              },
+              body: JSON.stringify({
+                rating: rating,
+                comment: comment,
+                name: name,
+              }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.status === "success") {
+                  // إخفاء النموذج وإظهار رسالة نجاح
+                  form.style.display = "none";
+                  document.getElementById("reviewText").value = "";
+
+                  Swal.fire({
+                    icon: "success",
+                    title: "شكراً لك!",
+                    text: data.message,
+                    timer: 2000,
+                    showConfirmButton: false,
+                  }).then(() => {
+                    window.location.reload(); // تحديث الصفحة لرؤية التقييم الجديد
+                  });
+                } else {
+                  Swal.fire({
+                    icon: "error",
+                    title: "خطأ",
+                    text: data.message,
+                  });
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                Swal.fire({
+                  icon: "error",
+                  title: "خطأ",
+                  text: "حدث خطأ في الاتصال بالخادم",
+                });
+              })
+              .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+              });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
+{% endblock %}

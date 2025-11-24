@@ -1,0 +1,570 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% load i18n %} 
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>صفحة | الملف الشخصي</title>
+
+    <style>
+        /* --- تنسيقاتك السابقة كما هي --- */
+        .tabs-pill .nav-link {
+        background: #fff;
+        border: none;
+        border-radius: 30px;
+        box-shadow: 5px 4px 8px rgba(0, 0, 0, .1);
+        color: #5d5d5d;
+        font-weight: 600;
+        padding: 13px 60px !important;
+        transition: all .3s;
+        position: relative;
+        z-index: 1;
+        }
+        
+        /* ... (احتفظ بكل الستايل الذي أرسلته لي سابقاً هنا دون تغيير) ... */
+        
+        .cart-title { font-size: 36px; color: #333; margin-bottom: 25px; }
+        .btn-cart-icon { background-color: #f47a44; color: white; border-radius: 50px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(244, 122, 68, 0.3); transition: background-color 0.3s; }
+        .btn-cart-icon:hover { background-color: #e06c3a; color: white; }
+
+        /* تنسيقات البروفايل الجديدة التي ضبطناها */
+        .profile-card {
+            background-color: #ffffff !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+            border: none !important;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-card img { border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        .profile-card #enableEditBtn { border: 2px solid #ff6420; color: #ff6420; font-weight: 600; transition: all 0.3s ease; }
+        .profile-card #enableEditBtn:hover { background-color: #ff6420; color: #fff; }
+        .profile-card .btn-light { background-color: #f8f9fa; color: #555; border: 1px solid #eee; }
+        .profile-card .btn-light:hover { background-color: #e2e6ea; }
+
+        .profile-form-card {
+            background-color: transparent !important;
+            box-shadow: none !important;
+            border: 1px solid rgba(255, 106, 61, 0.2) !important;
+        }
+        .profile-form-card .form-control {
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid #ddd !important;
+            border-radius: 15px !important;
+            padding: 12px 15px !important;
+            font-size: 1rem;
+            color: #333;
+            transition: all 0.3s;
+        }
+        .profile-form-card .form-control:focus {
+            background-color: #fff !important;
+            border-color: #ff6420 !important;
+            box-shadow: 0 0 0 4px rgba(255, 100, 32, 0.1) !important;
+        }
+        .profile-form-card .form-control:disabled {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+            border-color: transparent !important;
+            border-bottom: 1px solid #ccc !important;
+            border-radius: 0 !important;
+            padding-right: 0 !important;
+        }
+        .profile-form-card h4 { color: #2f3a45; font-weight: 800; }
+        .profile-form-card label { color: #666; font-weight: 600; margin-bottom: 5px; }
+        #saveBtn {
+            background-color: #ff6420 !important;
+            border: none !important;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(255, 100, 32, 0.4);
+        }
+        #saveBtn:hover { background-color: #e55b1c !important; }
+
+        @media (max-width: 768px) {
+            .profile-card, .profile-form-card { padding: 20px !important; }
+            .cart-title { font-size: 24px; }
+        }
+
+        /* تنسيقات الجدول */
+        .cart-table { border-collapse: separate; border-spacing: 0 1.5rem; }
+        .cart-table thead th { border: none; color: #999; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; background-color: transparent; }
+        .cart-table tbody tr { background-color: transparent; vertical-align: middle; transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
+        .cart-table tbody td { border: none; font-weight: 600; color: #444; background-color: transparent; }
+        .product-info { display: flex; align-items: center; }
+        .product-info img { width: 70px; height: 70px; border-radius: 15px; margin-left: 15px; object-fit: cover; }
+        .product-name { font-size: 1.1rem; font-weight: 700; color: #333; }
+        .product-id { font-size: 0.9rem; color: #aaa; }
+        .price { font-weight: 700; font-size: 1.1rem; }
+        .btn-remove { background-color: transparent; border-radius: 30px; color: #a5a5a5; font-size: 18px; font-weight: 300; width: 65%; height: 30px; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out; cursor: pointer; border: 1px solid #eee;}
+        .btn-remove:hover { background-color: #ff322b; color: #ffffff; border-color: #ff322b;}
+        .total-bar span { font-size: 1.1rem; color: #555; }
+        .total-bar strong { font-size: 1.2rem; font-weight: 700; color: #333; }
+        .checkout-container { display: flex; border-radius: 50px; overflow: hidden; border: 2px solid #e5e5e5; background-color: #fff; width: 100%; }
+        .total-section { padding: 12px 55px; display: flex; justify-content: space-between; align-items: center; flex-grow: 1; }
+        .total-section span { font-size: 1.1rem; color: #555; }
+        .total-section strong { font-size: 1.2rem; font-weight: 700; color: #333; }
+        .confirm-section-favorites { background-color: #f25715; color: white; padding: 12px 50px; font-weight: 700; font-size: 1.1rem; text-decoration: none; display: flex; align-items: center; justify-content: center; transition: background-color 0.3s; border-radius: 30px; border: none; cursor: pointer;}
+        .confirm-section-favorites:hover { background-color: #cb4a13; color: white; }
+        tfoot td { background: transparent; border: none; }
+        .status-badge { padding: 6px 12px; font-size: 0.85rem; font-weight: 600; text-align: center; display: inline-block; min-width: 90px; background: none; border: none; }
+        .status-badge.available { color: #f47a44; }
+        .status-badge.out-of-stock { color: #999; }
+
+        @media (max-width: 991px) {
+            .cart-table { width: 85%; }
+            .checkout-container { width: 100%; border-radius: 25px; }
+            .confirm-section-favorites { padding: 10px 30px; font-size: 16px; }
+        }
+        @media (max-width: 575.98px) {
+             /* تنسيقات الموبايل المحفوظة */
+            .cart-table { width: 100%; table-layout: fixed; }
+            .product-info img { width: 30px; height: 30px; margin-left: 8px; }
+            .product-name { font-size: 0.85rem; }
+            .product-id { font-size: 0.7rem; }
+            .btn-remove { width: 50%; height: 25px; font-size: 14px; }
+            .checkout-container { flex-direction: column; border-radius: 20px;}
+            .total-section { padding: 10px 20px; }
+            .confirm-section-favorites { width: 100%; border-radius: 0; padding: 10px; }
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- مسار التنقل -->
+      {% include "partials/navigation_route.html" with breadcrumbs=breadcrumbs%}
+
+      <div class="row">
+        <div class="container mt-5">
+          <!-- Header -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="cart-title" id="page-title">إعدادات الحساب</h1>
+            <div class="ms-2">
+              <div class="d-flex justify-content-end">
+                <ul class="nav tabs-pill mt-2" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-description" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">
+                      <i class="bi bi-person fa-lg"></i>
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-specifications" data-bs-toggle="tab" data-bs-target="#specifications" type="button" role="tab" aria-controls="specifications" aria-selected="false">
+                      <i class="bi bi-heart fa-lg"></i>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content -->
+          <div class="tab-content mt-5">
+            <!-- 1. تبويب البروفايل (نفس الكود الذي عملنا عليه) -->
+            <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="tab-description">
+              <div class="row justify-content-center">
+                <!-- البطاقة اليسرى -->
+                <div class="col-md-4 text-center mb-4">
+                  <div class="card shadow-sm border-0 rounded-4 p-4 h-100 profile-card">
+                    <div class="position-relative d-inline-block mx-auto mb-3">
+                      {% if user.customer_profile.avatar %}
+                      <img src="{{ user.customer_profile.avatar.url }}" id="avatarPreview" class="rounded-4 shadow-sm" style="width: 150px; height: 150px; object-fit: cover" alt="Avatar" />
+                      {% else %}
+                      <div class="d-flex align-items-center justify-content-center rounded-4 bg-light text-secondary" style="width: 150px; height: 150px; font-size: 4rem">
+                        <i class="bi bi-person"></i>
+                      </div>
+                      {% endif %}
+                      <label for="avatarUpload" id="cameraBtn" class="position-absolute bottom-0 end-0 bg-white p-2 rounded-circle shadow cursor-pointer d-none">
+                        <i class="bi bi-camera text-primary"></i>
+                      </label>
+                    </div>
+
+                    <h5 class="fw-bold mb-1" id="displayName">{{ user.customer_profile.name }}</h5>
+                    <p class="text-muted mb-2">{{ user.email }}</p>
+                    <p class="text-muted small mb-2">
+                      <i class="bi bi-telephone me-1"></i>
+                      <span id="displayPhone" dir="ltr">{{ user.customer_profile.phone_number|default:"لا يوجد رقم" }}</span>
+                    </p>
+                    <p class="text-muted small">
+                      <i class="bi bi-calendar3 me-1"></i>
+                      عضو منذ {{ user.date_joined|date:"Y-m-d" }}
+                    </p>
+
+                    <button type="button" class="btn btn-outline-primary rounded-pill px-4 mt-3" id="enableEditBtn" onclick="toggleEditMode()">
+                      <i class="bi bi-pencil-square me-2"></i> تعديل الملف
+                    </button>
+                    <button type="button" class="btn btn-light rounded-pill px-4 mt-2 w-100 border" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                      <i class="bi bi-key me-2"></i> تغيير كلمة المرور
+                    </button>
+                  </div>
+                </div>
+
+                <!-- البطاقة اليمنى (نموذج البيانات) -->
+                <div class="col-md-6">
+                  <div class="card shadow-sm border-0 rounded-4 p-4 h-100 profile-form-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h4 class="fw-bold text-secondary m-0">البيانات الشخصية</h4>
+                      <span class="badge bg-light text-secondary" id="modeBadge">عرض فقط</span>
+                    </div>
+                    <form id="profileForm" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="file" id="avatarUpload" name="avatar" class="d-none" accept="image/*" onchange="previewImage(this)" />
+                      <div class="mb-3">
+                        <label class="form-label text-muted small">الاسم الكامل</label>
+                        <input type="text" class="form-control form-control-lg fs-6" name="fullName" value="{{ user.customer_profile.name }}" disabled required />
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label text-muted small">البريد الإلكتروني</label>
+                        <input type="email" class="form-control form-control-lg fs-6 bg-light" value="{{ user.email }}" disabled />
+                      </div>
+                      <div class="mb-4">
+                        <label class="form-label text-muted small">رقم الهاتف</label>
+                        <input type="tel" class="form-control form-control-lg fs-6" name="phone" value="{{ user.customer_profile.phone_number|default:'' }}" placeholder="أدخل رقم هاتفك" disabled />
+                      </div>
+                      <div id="editButtons" class="d-none gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1 rounded-3 fw-bold" id="saveBtn"><i class="bi bi-check2-circle me-2"></i> حفظ التغييرات</button>
+                        <button type="button" class="btn btn-light flex-grow-1 rounded-3" onclick="cancelEdit()">إلغاء</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. تبويب المفضلة (Wishlist) - الآن ديناميكي -->
+            <div class="tab-pane fade" id="specifications" role="tabpanel" aria-labelledby="tab-specifications">
+              {% if wishlist_items %}
+              <table class="table cart-table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-start" style="width: 40%">اسم الصنف</th>
+                    <th scope="col" class="text-center" style="width: 15%">الحالة</th>
+                    <th scope="col" class="text-center" style="width: 20%">الفئة</th>
+                    <th scope="col" class="text-center" style="width: 15%">السعر</th>
+                    <th scope="col" style="width: 10%"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- حلقة التكرار على عناصر المفضلة القادمة من الباك اند -->
+                  {% for item in wishlist_items %}
+                  <tr id="wishlist-row-{{ item.product.id }}">
+                    <td>
+                      <div class="product-info">
+                        <a href="{% url 'product_details' item.product.id %}" class="text-decoration-none">
+                             {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" />
+                             {% else %}
+                              <!-- صورة افتراضية -->
+                              <img src="{% static 'images/default-product.png' %}" alt="{{ item.product.name }}" />
+                             {% endif %}
+                        </a>
+                        <div>
+                          <div class="product-name">{{ item.product.name }}</div>
+                          <div class="product-id">#{{ item.product.sku|default:"-" }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      {% if item.product.stock > 0 %}
+                      <span class="status-badge available">متوفر</span>
+                      {% else %}
+                      <span class="status-badge out-of-stock">نفذت الكمية</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-center">{{ item.product.category.name }}</td>
+                    <td class="text-center price">${{ item.product.price }}</td>
+                    <td>
+                      <!-- زر الحذف مع ربط الدالة -->
+                      <button class="btn btn-remove" onclick="removeFromWishlist({{ item.product.id }})">
+                        <i class="bi bi-trash3"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="5">
+                      <div class="checkout-container mb-5">
+                        <!-- زر نقل الكل إلى السلة -->
+                        <button onclick="moveAllToCart()" class="confirm-section-favorites w-100" style="border:none;">
+                           نقل الكل إلى سلة الطلبات
+                        </button>
+                        <div class="total-section">
+                          <span>قيمة المفضلة</span>
+                          <strong>${{ wishlist_total }}</strong>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+              {% else %}
+              <!-- في حالة عدم وجود مفضلة -->
+              <div class="text-center py-5">
+                 <i class="bi bi-heart text-muted" style="font-size: 4rem;"></i>
+                 <p class="mt-3 text-muted">قائمة المفضلة فارغة حالياً</p>
+                 <a href="{% url 'products' %}" class="btn btn-outline-primary rounded-pill px-4">تصفح المنتجات</a>
+              </div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- مودال تغيير كلمة المرور (موجود كما هو) -->
+    <div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
+        <!-- ... (نفس الكود الموجود لديك) ... -->
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">تغيير كلمة المرور</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                <form id="passwordChangeForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                    <label class="form-label small text-muted">كلمة المرور الحالية</label>
+                    <input type="password" name="old_password" class="form-control rounded-3" required />
+                    </div>
+                    <div class="mb-3">
+                    <label class="form-label small text-muted">كلمة المرور الجديدة</label>
+                    <input type="password" name="new_password1" class="form-control rounded-3" minlength="8" required />
+                    </div>
+                    <div class="mb-4">
+                    <label class="form-label small text-muted">تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" name="new_password2" class="form-control rounded-3" minlength="8" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold" id="passSaveBtn">تحديث كلمة المرور</button>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مختارة من أجلك -->
+    {% include "partials/cards.html" %}
+
+    <script>
+      // --- سكربتات الصفحة --- //
+      document.addEventListener("DOMContentLoaded", () => {
+        const pageTitle = document.getElementById("page-title");
+        const cartTab = document.getElementById("tab-description");
+        const favoritesTab = document.getElementById("tab-specifications");
+
+        if(cartTab && favoritesTab){
+            cartTab.addEventListener("shown.bs.tab", () => { pageTitle.textContent = "أعدادات الحساب"; });
+            favoritesTab.addEventListener("shown.bs.tab", () => { pageTitle.textContent = "قائمة العناصر المفضلة"; });
+        }
+      });
+
+      // دالة CSRF
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      // 1. دالة حذف عنصر من المفضلة
+      function removeFromWishlist(productId) {
+        Swal.fire({
+            title: 'هل أنت متأكد؟',
+            text: "سيتم حذف المنتج من المفضلة",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'نعم، احذفه',
+            cancelButtonText: 'إلغاء'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("{% url 'remove_from_wishlist' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    body: JSON.stringify({ product_id: productId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        // حذف السطر من الجدول
+                        const row = document.getElementById(`wishlist-row-${productId}`);
+                        if(row) row.remove();
+                        
+                        Swal.fire('تم الحذف!', 'تم حذف المنتج من قائمتك.', 'success');
+                        
+                        // تحديث الصفحة لو الجدول فضي (اختياري)
+                        const tbody = document.querySelector('.cart-table tbody');
+                        if(tbody && tbody.children.length === 0) location.reload();
+                    } else {
+                        Swal.fire('خطأ', 'حدث خطأ أثناء الحذف', 'error');
+                    }
+                });
+            }
+        })
+      }
+
+      // 2. دالة نقل الكل إلى السلة
+      function moveAllToCart() {
+         Swal.fire({
+            title: 'نقل الكل للسلة؟',
+            text: "سيتم نقل جميع منتجات المفضلة إلى سلة المشتريات وحذفها من هنا.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، انقلها',
+            cancelButtonText: 'إلغاء'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                 fetch("{% url 'move_wishlist_to_cart' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        Swal.fire({
+                            title: 'تم النقل!',
+                            text: data.message,
+                            icon: 'success'
+                        }).then(() => {
+                            // تحديث عداد السلة في الهيدر إن وجد
+                            const cartCount = document.getElementById('cart-items-count');
+                            if(cartCount) {
+                                cartCount.innerText = data.total_items;
+                                cartCount.style.display = 'inline-block';
+                            }
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire('خطأ', 'حدث خطأ أثناء النقل', 'error');
+                    }
+                });
+            }
+        });
+      }
+
+      // --- سكربتات البروفايل (صورة، تعديل، حفظ) ---
+      function previewImage(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            const img = document.getElementById("avatarPreview");
+            if(img) img.src = e.target.result;
+            else {
+                 // في حال كانت ايقونة
+                 const iconDiv = document.querySelector('.bg-light.text-secondary');
+                 if(iconDiv) iconDiv.innerHTML = `<img src="${e.target.result}" id="avatarPreview" class="rounded-4 shadow-sm" style="width: 150px; height: 150px; object-fit: cover" />`;
+            }
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      function toggleEditMode() {
+        const inputs = document.querySelectorAll('#profileForm input:not([type="email"])');
+        const editBtns = document.getElementById("editButtons");
+        const editTrigger = document.getElementById("enableEditBtn");
+        const cameraBtn = document.getElementById("cameraBtn");
+        const badge = document.getElementById("modeBadge");
+
+        inputs.forEach((input) => {
+          input.disabled = false;
+          input.classList.add("border-primary");
+        });
+        editBtns.classList.remove("d-none");
+        editBtns.classList.add("d-flex");
+        cameraBtn.classList.remove("d-none");
+        editTrigger.classList.add("d-none");
+        badge.textContent = "وضع التعديل";
+        badge.className = "badge bg-primary-subtle text-primary";
+      }
+
+      function cancelEdit() { window.location.reload(); }
+
+      // إرسال فورم البروفايل
+      document.getElementById("profileForm").addEventListener("submit", function (e) {
+          e.preventDefault();
+          const btn = document.getElementById("saveBtn");
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+          btn.disabled = true;
+          const formData = new FormData(this);
+
+          fetch(window.location.href, {
+            method: "POST",
+            body: formData,
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === "success") {
+                Swal.fire({
+                  icon: "success",
+                  title: "تم الحفظ!",
+                  toast: true,
+                  position: "top-end",
+                  showConfirmButton: false,
+                  timer: 2000,
+                  background: "#d1e7dd",
+                  color: "#0f5132",
+                }).then(() => window.location.reload());
+              } else {
+                Swal.fire({ icon: "error", title: "خطأ", text: data.message });
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+              }
+            });
+        });
+
+       // إرسال فورم الباسورد
+       const passwordForm = document.getElementById("passwordChangeForm");
+       if (passwordForm) {
+        passwordForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const btn = document.getElementById("passSaveBtn");
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...';
+          btn.disabled = true;
+          const formData = new FormData(this);
+          fetch(window.location.href, {
+            method: "POST",
+            body: formData,
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+          })
+          .then((response) => response.json())
+          .then((data) => {
+              if (data.status === "success") {
+                bootstrap.Modal.getInstance(document.getElementById("passwordModal")).hide();
+                e.target.reset();
+                Swal.fire({ icon: "success", title: "تم التغيير", text: data.message, timer: 2000, showConfirmButton: false });
+              } else {
+                Swal.fire({ icon: "error", title: "خطأ", text: data.message });
+              }
+            })
+            .finally(() => {
+              btn.innerHTML = originalText;
+              btn.disabled = false;
+            });
+        });
+       }
+    </script>
+  </body>
+</html>
+{% endblock %}

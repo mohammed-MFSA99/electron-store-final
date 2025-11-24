@@ -1,0 +1,22 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media/
+
+# Virtual Environment (مهم جداً عدم رفعه)
+venv/
+env/
+.env
+
+# Webpack & Node (بما أنك تستخدم Webpack)
+node_modules/
+dist/
+package-lock.json
+
+# IDEs
+.vscode/
+.idea/

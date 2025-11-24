@@ -1,0 +1,367 @@
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% block content %}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>صفحة | عنا</title>
+
+    <style>
+      /* =========================================
+   تنسيقات قسم تواصل معنا (Contact Us)
+   ========================================= */
+
+      .contact-section {
+        padding: 80px 0;
+        
+      }
+
+      /* رأس القسم */
+      .contact-header {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .contact-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2f3a45;
+        margin-bottom: 15px;
+      }
+
+      .contact-header p {
+        color: #66727e;
+        max-width: 600px;
+        margin: 0 auto;
+        font-size: 1.1rem;
+      }
+
+      /* البطاقات (معلومات الاتصال + النموذج) */
+      .contact-info-card,
+      .message-form-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        height: 100%; /* لتوحيد الطول */
+        transition: transform 0.3s ease;
+        border: 1px solid #e6e8ef;
+      }
+
+      .contact-info-card:hover,
+      .message-form-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .contact-info-card h4,
+      .message-form-card h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2f3a45;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #fbe8da;
+        padding-bottom: 15px;
+        display: inline-block;
+      }
+
+      /* عناصر معلومات الاتصال */
+      .contact-info-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 30px;
+      }
+
+      .contact-info-item i {
+        width: 50px;
+        height: 50px;
+        background-color: #ffe2d4; /* خلفية برتقالية فاتحة */
+        color: #ff6a3d; /* لون الأيقونة */
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-left: 20px; /* مسافة لليسار في RTL */
+        flex-shrink: 0;
+      }
+
+      .info-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .info-text strong {
+        font-size: 1.1rem;
+        color: #2f3a45;
+        margin-bottom: 5px;
+      }
+
+      .info-text span {
+        color: #66727e;
+        font-size: 0.95rem;
+      }
+
+      /* نموذج الرسائل */
+      .message-form-card label {
+        font-weight: 600;
+        color: #2f3a45;
+        margin-bottom: 8px;
+      }
+
+      .message-form-card .form-control {
+        border-radius: 12px;
+        padding: 12px 15px;
+        border: 1px solid #e6e8ef;
+        background-color: #fdfdfd;
+        font-size: 0.95rem;
+      }
+
+      .message-form-card .form-control:focus {
+        border-color: #ff6a3d;
+        box-shadow: 0 0 0 4px rgba(255, 106, 61, 0.1);
+        background-color: #fff;
+      }
+
+      /* زر الإرسال */
+      .submit-btn {
+        background: linear-gradient(45deg, #ff6a3d, #e85c31);
+        color: #fff;
+        border: none;
+        padding: 12px 35px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 106, 61, 0.3);
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 106, 61, 0.4);
+      }
+
+      /* قسم الخريطة */
+      .map-section {
+        margin-top: 0;
+        padding: 0;
+      }
+
+      .map-container {
+        border-radius: 0;
+        overflow: hidden;
+        box-shadow: none;
+        border: none;
+      }
+
+      .map-container iframe {
+        width: 100%;
+        height: 600px;
+        display: block;
+      }
+
+      /* التجاوب (Responsive) */
+      @media (max-width: 768px) {
+        .contact-header h2 {
+          font-size: 2rem;
+        }
+
+        .contact-info-card,
+        .message-form-card {
+          padding: 25px;
+        }
+
+        .map-container iframe {
+          height: 300px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- مسار التنقل -->
+      {% include "partials/navigation_route.html" with breadcrumbs=breadcrumbs%}
+    </div>
+
+
+     <!-- قسم الخريطة -->
+    <section class="map-section">
+      <div class="map-container">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15560.117767852782!2d44.959040038860984!3d12.841394749312215!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x161e1d005f4279b5%3A0xf2ec76078d87a46!2z2KXZhNmD2KrYsdmI2YY!5e0!3m2!1sen!2s!4v1762351880449!5m2!1sen!2s"
+          style="border: 0"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    </section>
+
+    <!-- قسم تواصل معنا المحسن-->
+    <section class="contact-section" id="contact-options">
+      <div class="container">
+        <!-- رأس القسم -->
+        <div class="contact-header">
+          <h2>تواصل معنا</h2>
+          <p>
+            نحن هنا لمساعدتك! تواصل معنا عبر أي من الطرق التالية وسنكون سعداء
+            بخدمتك
+          </p>
+        </div>
+
+        <div class="row g-4">
+          <!-- العمود الأيمن: معلومات التواصل والاشتراك -->
+          <div class="col-lg-4">
+            <!-- بطاقة معلومات التواصل -->
+            <div class="contact-info-card">
+              <h4>معلومات التواصل</h4>
+
+              <!-- الهاتف -->
+              <div class="contact-info-item">
+                <i class="fas fa-phone-alt"></i>
+                <div class="info-text">
+                  <strong>الهاتف</strong>
+                  <span>974.4422.7813</span>
+                </div>
+              </div>
+
+              <!-- البريد الإلكتروني -->
+              <div class="contact-info-item">
+                <i class="fas fa-envelope"></i>
+                <div class="info-text">
+                  <strong>البريد الإلكتروني</strong>
+                  <span>info@electron.com</span>
+                </div>
+              </div>
+
+              <!-- العنوان -->
+              <div class="contact-info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div class="info-text">
+                  <strong>العنوان</strong>
+                  <span>اليمن - عدن - انما القديم</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- العمود الأيسر: نموذج إرسال الرسالة -->
+          <div class="col-lg-8">
+            <div class="message-form-card">
+              <h4>
+                <i class="fas fa-paper-plane me-2"></i>
+                أرسل لنا رسالة
+              </h4>
+              <form id="contact-form" onsubmit="handleContactSubmit(event)">
+                <div class="row g-3">
+                  <!-- الاسم -->
+                  <div class="col-md-6">
+                    <label for="contact-name" class="form-label"
+                      >الاسم الكامل</label
+                    >
+                    <input
+                      id="contact-name"
+                      class="form-control"
+                      name="name"
+                      type="text"
+                      placeholder="أدخل اسمك الكامل"
+                      required
+                    />
+                  </div>
+
+                  <!-- البريد الإلكتروني -->
+                  <div class="col-md-6">
+                    <label for="contact-email" class="form-label"
+                      >البريد الإلكتروني</label
+                    >
+                    <input
+                      id="contact-email"
+                      class="form-control"
+                      name="email"
+                      type="email"
+                      placeholder="example@email.com"
+                      required
+                    />
+                  </div>
+
+                  <!-- رقم الهاتف (اختياري) -->
+                  <div class="col-md-6">
+                    <label for="contact-phone" class="form-label"
+                      >رقم الهاتف (اختياري)</label
+                    >
+                    <input
+                      id="contact-phone"
+                      class="form-control"
+                      name="phone"
+                      type="tel"
+                      placeholder="+971 XX XXX XXXX"
+                    />
+                  </div>
+
+                  <!-- الموضوع -->
+                  <div class="col-md-6">
+                    <label for="contact-subject" class="form-label"
+                      >الموضوع</label
+                    >
+                    <select
+                      id="contact-subject"
+                      class="form-control"
+                      name="subject"
+                      required
+                    >
+                      <option value="">اختر الموضوع</option>
+                      <option value="general">استفسار عام</option>
+                      <option value="support">الدعم الفني</option>
+                      <option value="order">استفسار عن طلب</option>
+                      <option value="partnership">فرص الشراكة</option>
+                      <option value="other">أخرى</option>
+                    </select>
+                  </div>
+
+                  <!-- الرسالة -->
+                  <div class="col-12">
+                    <label for="contact-message" class="form-label"
+                      >نص الرسالة</label
+                    >
+                    <textarea
+                      id="contact-message"
+                      class="form-control"
+                      name="message"
+                      placeholder="اكتب رسالتك هنا..."
+                      rows="6"
+                      required
+                    ></textarea>
+                  </div>
+
+                  <!-- زر الإرسال -->
+                  <div class="col-12">
+                    <div class="d-flex justify-content-end">
+                      <button type="submit" class="submit-btn">
+                        إرسال الرسالة
+                        <i class="far fa-paper-plane"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        
+      </div>
+    </section>
+    <!-- قسم تواصل معنا المحسن-->
+
+   
+
+    <!-- مختارة من أجلك  -->
+    {%include 'partials/cards.html' %}
+  </body>
+</html>
+
+{% endblock %}

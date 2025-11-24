@@ -1,0 +1,577 @@
+{% extends 'base.html' %} {% load static %} {% load i18n %} {% load
+pagination_tags %} {% block content %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>صفحة | المنتجات</title>
+
+    <style>
+      .sidebar {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .sidebar h5 {
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
+      .form-check {
+        margin-bottom: 10px;
+      }
+
+      .form-check-input:checked {
+        background-color: #ff6b35;
+        border-color: #ff6b35;
+      }
+
+      .price-range {
+        margin: 20px 0;
+      }
+
+      .range-slider {
+        position: relative;
+        margin: 20px 0;
+      }
+
+      .range-input {
+        width: 100%;
+        height: 5px;
+        background: #ddd;
+        outline: none;
+        border-radius: 5px;
+      }
+
+      .range-input::-webkit-slider-thumb {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #ff6b35;
+        cursor: pointer;
+        border-radius: 50%;
+      }
+
+      .product-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        box-shadow: 0.3s ease;
+        margin-bottom: 30px;
+        overflow: hidden;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .product-image {
+        height: 250px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+
+      .product-info {
+        padding: 20px;
+      }
+
+      .product-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .product-price {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ff6b35;
+        margin-bottom: 15px;
+      }
+
+      .product-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn-wishlist {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .btn-wishlist:hover {
+        background: #ff6b35;
+        color: white;
+        border-color: #ff6b35;
+      }
+
+      .btn-cart {
+        background: #ff6b35;
+        border: 1px solid #ff6b35;
+        color: white;
+        flex: 1;
+        height: 40px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .btn-cart:hover {
+        border-color: #e55a2b;
+      }
+
+      .filter-controls {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        margin-bottom: 30px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+      }
+
+      .pagination .page-link {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 5px;
+        border: 1px solid #dee2e6;
+      }
+
+      .pagination .page-item.active .page-link {
+        background-color: #ff6b35;
+        border-color: #ff6b35;
+      }
+
+      .size-options {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+      }
+
+      .size-btn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .size-btn.active {
+        background: #ff6b35;
+        color: white;
+        border-color: #ff6b35;
+      }
+
+      .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 20px;
+      }
+
+      .breadcrumb-item a {
+        color: #6c757d;
+        text-decoration: none;
+      }
+
+      .breadcrumb-item.active {
+        color: #ff6b35;
+      }
+
+      .accordion-filter .accordion .accordion-item {
+        background-color: rgba(241, 240, 240, 0.17);
+        margin-bottom: 20px;
+        border: 0;
+        border: 2px solid #d2d1ce;
+        border-radius: 20px;
+      }
+      .accordion-filter .accordion .accordion-item .accordion-header button {
+        background-color: transparent;
+        font-size: 16px;
+        color: #363636;
+        border-bottom: 0;
+        box-shadow: 0 0 0 0 0 rgba(255, 255, 255, 0.027);
+      }
+      .accordion-filter
+        .accordion
+        .accordion-item
+        .accordion-header
+        button:focus {
+        border-color: transparent;
+        box-shadow: 0 0 0 0;
+      }
+      .accordion-filter .accordion button {
+        background-color: #ff6b35;
+        color: white;
+
+        border-radius: 15px;
+      }
+      .accordion-filter .accordion button:hover {
+        background-color: #e55a2b;
+      }
+      .form-check-input:checked {
+        background-color: #e55a2b;
+        border-color: #ff6b35;
+      }
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+      }
+
+      .pagination .page-link {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 5px;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+      }
+
+      .pagination .page-item.active .page-link {
+        background-color: #ff6b35;
+        border-color: #ff6b35;
+      }
+    </style>
+  </head>
+  <body>
+    {% load currency_filters %}
+    <!-- مسار التنقل -->
+    {% include "partials/navigation_route.html" with breadcrumbs=breadcrumbs %}
+
+    <section class="all-products">
+      <div class="container py-4">
+        <div class="row accordion-filter">
+          <div class="col-lg-3">
+            <div class="accordion" id="filtersAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCompany">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseCompany"
+                    aria-expanded="true"
+                    aria-controls="collapseCompany"
+                  >
+                    الفئات
+                  </button>
+                </h2>
+                <div
+                  id="collapseCompany"
+                  class="accordion-collapse collapse show"
+                  aria-labelledby="headingCompany"
+                >
+                  <div class="accordion-body">
+                    {% for category in all_categories %}
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="ti" />
+                      <label class="form-check-label" for="ti">
+                        {{ category.name }}
+                      </label>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <!-- الشركة المصنعة -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCompany">
+                  <button
+                    class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapseCompany"
+                    aria-expanded="true"
+                    aria-controls="collapseCompany"
+                  >
+                    الشركة المصنعة
+                  </button>
+                </h2>
+                <div
+                  id="collapseCompany"
+                  class="accordion-collapse collapse show"
+                  aria-labelledby="headingCompany"
+                >
+                  <div class="accordion-body">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="ti"
+                        checked
+                      />
+                      <label class="form-check-label" for="ti">
+                        TI (611)
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="sweh"
+                      />
+                      <label class="form-check-label" for="sweh">
+                        Sweh (133)
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="tantop"
+                      />
+                      <label class="form-check-label" for="tantop">
+                        TanTop (56)
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="dtsi"
+                      />
+                      <label class="form-check-label" for="dtsi">
+                        Dtsi (6)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- السعر -->
+              {% comment %} <div class="accordion-item">
+                <h2 class="accordion-header" id="headingPrice">
+                  <button
+                    class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapsePrice"
+                    aria-expanded="false"
+                    aria-controls="collapsePrice"
+                  >
+                    السعر
+                  </button>
+                </h2>
+                <div
+                  id="collapsePrice"
+                  class="accordion-collapse collapse"
+                  aria-labelledby="headingPrice"
+                >
+                  <div class="accordion-body">
+                    <div class="price-range">
+                      <div class="d-flex justify-content-between mb-3">
+                        <span>0 USD</span>
+                        <span>5000 USD</span>
+                      </div>
+                      <input
+                        type="range"
+                        class="range-input"
+                        min="0"
+                        max="5000"
+                        value="2500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div> {% endcomment %}
+
+              <div>
+                <button type="submit" class="btn btn-filter w-100 my-3">
+                  تصفية <i class="bi bi-funnel"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="col-lg-9">
+            <!-- Filter Controls -->
+
+              <!-- نموذج الفرز (Sorting Form) -->
+              <div class="filter-controls">
+                <div class="d-flex align-items-center gap-3">
+                  
+                  <form method="GET" action="{% url 'products' %}" id="sortForm">
+                    <!-- هذا حقل مخفي مهم جدًا للحفاظ على حالة البحث عند تغيير الفرز -->
+                    {% if request.GET.q %}
+                        <input type="hidden" name="q" value="{{ request.GET.q }}">
+                    {% endif %}
+
+                    <label for="sortOptions" class="me-2">ترتيب:</label>
+                    <select name="sort" id="sortOptions" class="form-select" onchange="this.form.submit()">
+                        <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>الأحدث</option>
+                        <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>الأعلى تقييماً</option>
+                        <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>السعر: من الأقل للأعلى</option>
+                        <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>السعر: من الأعلى للأقل</option>
+                    </select>
+                  </form>
+                </div>
+              </div>
+            
+
+            <!-- Products Grid -->
+            <div class="row">
+              {% for product in products %}
+                <!-- Product Card -->
+                {% include "partials/cards2.html" with product=product %} 
+        
+              {% empty%}
+                <!-- هذا القسم سيظهر فقط إذا كانت قائمة `products` فارغة -->
+                <div class="col-12 text-center my-5">
+                  <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading">عفواً!</h4>
+                    <p>لا توجد منتجات تطابق المعايير التي حددتها.</p>
+                    <hr />
+                    <p class="mb-0">
+                      جرّب البحث بكلمات مختلفة، أو قم بإزالة الفلاتر لعرض جميع
+                      المنتجات.
+                    </p>
+                  </div>
+                  <a href="{% url 'products' %}" class="btn btn-primary mt-3"
+                    >عرض كل المنتجات</a
+                  >
+                </div>
+
+              {% endfor %}
+            </div>
+
+
+            <!-- Pagination -->
+            {% if products.has_other_pages %}
+            <div class="pagination-container">
+              <nav>
+                <ul class="pagination">
+                  <!-- زر السابق -->
+                  {% if products.has_previous %}
+                    <li class="page-item">
+                      <a class="page-link" 
+                        href="?page={{ products.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                      >
+                        <i class="fas fa-chevron-right"></i>
+                      </a>
+                    </li>
+                  {% else %}
+                  <li class="page-item disabled">
+                    <a
+                      class="page-link"
+                      href="#"
+                      tabindex="-1"
+                      aria-disabled="true"
+                    >
+                      <i class="fas fa-chevron-right"></i>
+                    </a>
+                  </li>
+                  {% endif %}
+
+                  <!-- أرقام الصفحات -->
+                  {% for i in products.paginator.page_range %} 
+                    {% if products.number == i %}
+                      <li class="page-item active">
+                        <a class="page-link" 
+                          href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                        >
+                          {{ i }}
+                        </a>
+                      </li>
+                    {% else %}
+                      <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                      </li>
+                    {% endif %} 
+                  {% endfor %}
+
+                  <!-- زر التالي -->
+                  {% if products.has_next %}
+                    <li class="page-item">
+                      <a class="page-link" 
+                        href="?page={{ products.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                      >
+                        <i class="fas fa-chevron-left"></i>
+                      </a>
+                    </li>
+                  {% else %}
+                    <li class="page-item disabled">
+                      <a
+                        class="page-link"
+                        href="#"
+                        tabindex="-1"
+                        aria-disabled="true"
+                      >
+                        <i class="fas fa-chevron-left"></i>
+                      </a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Add interactivity
+      document.addEventListener("DOMContentLoaded", function () {
+        // Size buttons
+        const sizeButtons = document.querySelectorAll(".size-btn");
+        sizeButtons.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            sizeButtons.forEach((b) => b.classList.remove("active"));
+            this.classList.add("active");
+          });
+        });
+
+        // Wishlist buttons
+        const wishlistButtons = document.querySelectorAll(".btn-wishlist");
+        wishlistButtons.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const icon = this.querySelector("i");
+            icon.classList.toggle("far");
+            icon.classList.toggle("fas");
+            this.classList.toggle("text-danger");
+          });
+        });
+
+        // Price range slider
+        const rangeSlider = document.querySelector(".range-input");
+        rangeSlider.addEventListener("input", function () {
+          // You can add functionality to update the price range display
+        });
+      });
+    </script>
+  </body>
+</html>
+{% endblock %}

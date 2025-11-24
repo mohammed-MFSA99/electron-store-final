@@ -1,0 +1,78 @@
+{% load i18n %} {% load static %} {% load currency_filters %}
+<!-- Product 1 -->
+
+{% for product in products %}
+
+<div class="col-md-4">
+  
+  <div class="product-card">
+    <a href="{% url 'product_details' product.id %}">
+      <div class="product-img">
+        <!-- ✅ بداية التعديل: التحقق من وجود الصورة -->
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{product.name}}" />
+        {% else %}
+          <!-- صورة بديلة تظهر تلقائياً إذا لم يكن للمنتج صورة -->
+          <img src="https://via.placeholder.com/300x300?text=No+Image" alt="{{product.name}}" style="background-color: #f0f0f0;" />
+        {% endif %}
+        <!-- ✅ نهاية التعديل -->
+      </div>
+    </a>
+    <div class="product-content">
+      <h3 class="product-title">{{product.name}}</h3>
+      <p class="product-description">
+        {{product.description|truncatechars:50}}
+      </p>
+      <div class="product-meta">
+        <div class="rating">
+          {% if product.reviews_count > 0 %}
+          <!-- حلقة لعرض النجوم بناءً على متوسط التقييم -->
+          {% with avg_int=product.average_rating|floatformat:0 %} 
+            {% for i in "12345" %} 
+              {% if i|add:"0" <= avg_int|add:"0" %}
+              <i class="fas fa-star"></i>
+              {% else %}
+              <i class="far fa-star"></i>
+              {% endif %} 
+            {% endfor %}
+          {% endwith %}
+          <!-- عرض عدد التقييمات -->
+          <span>({{ product.reviews_count }})</span>
+          {% else %}
+          <!-- عرض نجوم فارغة إذا لم يكن هناك تقييمات -->
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <i class="far fa-star"></i>
+          <span>(0)</span>
+          {% endif %}
+        </div>
+        <div class="price">{{product.price|currency}}</div>
+      </div>
+      <div class="product-actions">
+        <button
+          class="btn btn-sm details-btn btn-wishlist-toggle"
+          data-product-id="{{ product.id }}"
+          onclick="toggleWishlist(this, {{ product.id }})"
+          title="أضف للمفضلة"
+        >
+          <!-- هنا سنحتاج منطق بسيط لمعرفة هل المنتج مفضل أم لا لتلوينه -->
+          <!-- حالياً سنضعه فارغ افتراضياً، والجافاسكربت سيتولى التلوين عند الضغط -->
+          <i class="bi bi-heart fa-lg"></i>
+        </button>
+
+        <button class="add-to-cart btn-add-cart" 
+           data-product-id="{{ product.id }}">
+          <div class="button-wrapper">
+            <span class="text">أضف للسلة</span>
+            <div class="icon">
+              <i class="bi bi-cart-plus fa-lg"></i>
+            </div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}

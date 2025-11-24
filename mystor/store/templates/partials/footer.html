@@ -1,0 +1,92 @@
+{% load i18n %} {% load static %}
+
+<!-- الفوتر (Footer) -->
+<footer class="footer">
+  <div class="container">
+    <div class="row g-4">
+      <!-- العمود الأول -->
+      <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
+        <h3 class="footer-title">
+          <i class="fas fa-microchip me-2"></i>
+          إلكترون
+        </h3>
+        <p>متجرك الأول للمكونات الإلكترونية بجودة عالية وأسعار تنافسية.</p>
+        <div class="social-links">
+          <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link"
+            ><i class="fa-brands fa-whatsapp"></i
+          ></a>
+        </div>
+      </div>
+
+      <!-- العمود الثاني -->
+      <div class="col-6 col-md-6 col-lg-2">
+        <h4 class="footer-title">روابط سريعة</h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'index' %}">الرئيسية</a></li>
+          <li><a href="#">منتجاتنا</a></li>
+          <li><a href="#">الفئات</a></li>
+        </ul>
+      </div>
+
+      <!-- العمود الثالث -->
+      <div class="col-6 col-md-6 col-lg-2">
+        <h4 class="footer-title">خدماتنا</h4>
+        <ul class="footer-links">
+          <li><a href="#">حول المتجر</a></li>
+          <li><a href="#">الشروط</a></li>
+          <li><a href="#">الخصوصية</a></li>
+          <li><a href="#">اتصل بنا</a></li>
+        </ul>
+      </div>
+
+      <!-- العمود الرابع -->
+      <div class="col-12 col-md-6 col-lg-4">
+        <h4 class="footer-title">اشترك في نشرتنا</h4>
+        <p class="small">كن أول من يعلم عن أحدث المنتجات والعروض.</p>
+        <form class="subscribe-form">
+          <div class="input-group mb-3">
+            <input
+              type="email"
+              class="form-control"
+              placeholder="بريدك الإلكتروني"
+              required
+            />
+            <button class="btn" type="submit">اشتراك</button>
+          </div>
+        </form>
+        <div class="payment-methods mt-3">
+          <h5 class="h6">طرق الدفع المدعومة</h5>
+          <div class="payment-icons py-2">
+            <img
+              src=" {% static '/images/IMG_Bin_Dowal.png' %}"
+              alt="بنك بن دول"
+            />
+            <img
+              src=" {% static './images/albasiri (2).png' %}"
+              alt="بنك البسيري"
+            />
+            <img
+              src=" {% static './images/alkuraimi (2).png' %}"
+              alt="بنك الكريمي"
+            />
+            <img src=" {% static './images/alamqi (2).png' %}" alt="العمقي" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="copyright text-center">
+          <p class="small mb-0">
+            © 2025 إلكترون. جميع الحقوق محفوظة. تصميم وتطوير المهندس / محمد فائز
+            العامري
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

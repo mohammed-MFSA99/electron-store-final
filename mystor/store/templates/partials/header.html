@@ -1,0 +1,371 @@
+{% load i18n %} {% load static %}
+
+<!-- رأس الصفحة المتجاوب -->
+<nav class="navbar custom-navbar navbar-expand-lg sticky-top">
+  <div class="container-fluid px-5">
+    <!-- ============================================ -->
+    <!-- 1. الشاشات الصغيرة (Mobile/Tablet) - الجزء العلوي -->
+    <!-- ============================================ -->
+    <div
+      class="d-flex justify-content-between align-items-center w-100 d-lg-none"
+    >
+      <a class="navbar-brand" href="{% url 'index' %}">
+        <img
+          src="{% static '/images/brand_electron11.png' %}"
+          alt="الكترون"
+          class="logo-img"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 65px;
+            height: 70px;
+          "
+        />
+      </a>
+
+      <div class="d-flex align-items-center">
+        <!-- عربة التسوق -->
+        <div class="shopping-cart me-2">
+          <span
+            class="cart-count cart-counter-badge"
+            id="cart-items-count-mobile"
+            >{{ cart_total_items }}</span
+          >
+          <a href="{% url 'checkout' %}" class="btn-icon btn">
+            <i class="bi bi-cart3 fa-lg"></i>
+          </a>
+        </div>
+        <!-- المفضلة-->
+        <div class="shopping-cart me-2">
+          <span
+            class="cart-count wishlist-counter-badge"
+            id="wishlist-items-count"
+            >{{ wishlist_count }}</span
+          >
+          <a href="{% url 'profile' %}" class="btn-icon btn">
+            <i class="bi bi-heart fa-lg"></i>
+          </a>
+        </div>
+        <!-- أيقونة المستخدم (تذهب للملف الشخصي دائماً) -->
+        <a href="{% url 'profile' %}" class="btn-icon btn me-2">
+          {% if user.is_authenticated and user.customer_profile.avatar %}
+          <img
+            src="{{ user.customer_profile.avatar.url }}"
+            class="rounded-circle"
+            style="width: 25px; height: 25px; object-fit: cover"
+          />
+          {% else %}
+          <i class="bi bi-person fs-4"></i>
+          {% endif %}
+        </a>
+
+        <!-- زر القائمة -->
+        <button
+          class="navbar-toggler btn btn-icon"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+        >
+          <i class="fas fa-bars fa-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- المحتوى الرئيسي للشريط (القائمة المنسدلة) -->
+    <!-- ============================================ -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- ============================================ -->
+      <!-- 2. الشاشات الكبيرة (Desktop) -->
+      <!-- ============================================ -->
+      <div
+        class="d-none d-lg-flex w-100 align-items-center justify-content-between"
+      >
+        <!-- القسم الأيمن: الشعار والقائمة -->
+        <div class="d-flex align-items-center">
+          <a class="navbar-brand me-4" href="{% url 'index' %}">
+            <img
+              src="{% static '/images/brand_electron11.png' %}"
+              alt="الكترون"
+              class="logo-img"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 80px;
+                height: 85px;
+              "
+            />
+          </a>
+
+          <ul class="navbar-nav d-flex flex-row">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'index' %}">الرئيسية</a>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="productsDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                >المنتجات</a
+              >
+              <ul class="dropdown-menu" aria-labelledby="productsDropdown">
+                <!-- بداية المنطقة الديناميكية للفئات -->
+                {% for category in main_categories %} {% if category.children.exists %}
+                <!-- الحالة 1: الفئة لها فروع (مثل Microcontrollers) -> تظهر كقائمة منسدلة -->
+                <li class="nav-item dropdown category-dropdown dropend">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="navbarDropdown{{ category.id }}"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    {{ category.name }}
+                  </a>
+                  <ul
+                    class="dropdown-menu text-end"
+                    aria-labelledby="navbarDropdown{{ category.id }}"
+                  >
+                    <!-- خيار لعرض كل منتجات القسم الرئيسي -->
+                    <li>
+                      <a
+                        class="dropdown-item fw-bold"
+                        href="{% url 'products' %}?cid={{ category.id }}"
+                      >
+                        الكل في {{ category.name }}
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+
+                    <!-- عرض الفروع (الأبناء) -->
+                    {% for child in category.children.all %}
+                    <li>
+                      <a
+                        class="dropdown-item"
+                        href="{% url 'products' %}?cid={{ child.id }}"
+                      >
+                        {{ child.name }}
+                      </a>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </li>
+                {% else %}
+                <!-- الحالة 2: الفئة ليس لها فروع -> تظهر كرابط عادي -->
+                <li class="nav-item">
+                  <a
+                    class="nav-link"
+                    href="{% url 'products' %}?cid={{ category.id }}"
+                  >
+                    {{ category.name }}
+                  </a>
+                </li>
+                {% endif %} {% endfor %}
+                <!-- نهاية المنطقة الديناميكية -->
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'contact' %}">تواصل معنا</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'about' %}">عنا</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- القسم الأوسط: شريط البحث -->
+        <div class="search-container flex-grow-1 mx-4">
+          <form
+            method="GET"
+            action="{% url 'products' %}"
+            class="custom-search"
+          >
+            <input
+              type="search"
+              name="q"
+              class="custom-form-control"
+              placeholder="ابحث عن منتجاتنا..."
+              value="{{ request.GET.q }}"
+            />
+            <button type="submit" class="search-btn-in">
+              <i class="fas fa-search"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- القسم الأيسر: المستخدم والسلة -->
+        <div class="d-flex align-items-center gap-2">
+          <!-- عربة التسوق -->
+          <div class="shopping-cart me-2">
+            <span class="cart-count cart-counter-badge" id="cart-items-count"
+              >{{ cart_total_items }}</span
+            >
+            <a href="{% url 'checkout' %}" class="btn-icon btn">
+              <i class="bi bi-cart3 fa-lg"></i>
+            </a>
+          </div>
+          <!-- المفضلة-->
+          <div class="shopping-cart me-2">
+            <span
+              class="cart-count wishlist-counter-badge"
+              id="wishlist-items-count"
+              >{{ wishlist_count }}</span
+            >
+            <a href="{% url 'profile' %}" class="btn-icon btn">
+              <i class="bi bi-heart fa-lg"></i>
+            </a>
+          </div>
+
+          <!-- ✅ منطق تسجيل الدخول (للشاشات الكبيرة) -->
+          {% if user.is_authenticated %}
+          <!-- قائمة المستخدم المنسدلة -->
+          <div class="dropdown">
+            <a
+              href="#"
+              class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {% if user.customer_profile.avatar %}
+              <img
+                src="{{ user.customer_profile.avatar.url }}"
+                alt="Avatar"
+                width="35"
+                height="35"
+                class="rounded-circle me-2"
+                style="object-fit: cover"
+              />
+              {% else %}
+              <div class="btn-icon btn me-1">
+                <i class="bi bi-person-check fs-4"></i>
+              </div>
+              {% endif %}
+              <span class="fw-bold d-none d-xl-block"
+                >{{user.customer_profile.name|default:user.username|truncatechars:10 }}</span
+              >
+            </a>
+            <ul
+              class="dropdown-menu dropdown-menu-end text-end shadow-sm border-0"
+              aria-labelledby="userDropdown"
+            >
+              <li>
+                <a class="dropdown-item" href="{% url 'profile' %}"
+                  ><i class="bi bi-person me-2"></i>الملف الشخصي</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <button
+                  class="dropdown-item text-danger"
+                  onclick="logoutUser()"
+                >
+                  <i class="bi bi-box-arrow-left me-2"></i>تسجيل الخروج
+                </button>
+              </li>
+            </ul>
+          </div>
+          {% else %}
+          <!-- زر تسجيل الدخول للزائر -->
+          <button
+            class="btn search-btn-outline"
+            type="button"
+            data-login-trigger="open"
+          >
+            تسجيل الدخول
+          </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- 3. الشاشات الصغيرة (Mobile Menu) - القائمة المنسدلة -->
+      <!-- ============================================ -->
+      <div class="d-lg-none pb-3">
+        <!-- شريط البحث -->
+        <div class="mobile-search mb-3 mt-2">
+          <form
+            method="GET"
+            action="{% url 'products' %}"
+            class="custom-search"
+          >
+            <input
+              type="search"
+              name="q"
+              class="custom-form-control"
+              placeholder="ابحث عن منتجاتنا..."
+              value="{{ request.GET.q }}"
+            />
+            <button type="submit" class="search-btn-in">
+              <i class="fas fa-search"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- قائمة التنقل -->
+        <ul class="navbar-nav mb-3">
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'index' %}">الرئيسية</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="productsDropdownMobile"
+              role="button"
+              data-bs-toggle="dropdown"
+              >المنتجات</a
+            >
+            <ul class="dropdown-menu" aria-labelledby="productsDropdownMobile">
+              {% for category in all_categories %}
+              <li>
+                <a class="dropdown-item" href="{% url 'products' category.id %}"
+                  >{{ category.name }}</a
+                >
+              </li>
+              {% endfor %}
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contact-options">تواصل معنا</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'about' %}">عنا</a>
+          </li>
+
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link fw-bold text-primary" href="{% url 'profile' %}"
+              >حسابي ({{ user.customer_profile.name }})</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+
+        <!-- ✅ منطق تسجيل الدخول (للشاشات الصغيرة) -->
+        <div class="d-grid gap-2">
+          {% if user.is_authenticated %}
+          <button class="btn btn-danger" onclick="logoutUser()">
+            تسجيل الخروج
+          </button>
+          {% else %}
+          <button
+            class="btn search-btn-outline"
+            type="button"
+            data-login-trigger="open"
+          >
+            تسجيل الدخول
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
